@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DRL Portfolio Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Rekomendasi Alokasi Dana</h1>
+    
+    <div id="loader" class="loader"></div>
+    <p id="loading-text">Model is running, please wait...</p>
+
+    <div id="results-container"></div>
+
+    <script>
+        // Run this script after the page has loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // The HTML elements we need to manipulate
+            const loader = document.getElementById('loader');
+            const loadingText = document.getElementById('loading-text');
+            const resultsContainer = document.getElementById('results-container');
+
+            // Use the Fetch API to call our new Flask route
+            fetch('/get_recommendations', { method: 'POST' })
+                .then(response => response.json()) // Parse the JSON response
+                .then(data => {
+                    // Hide the loader
+                    loader.style.display = 'none';
+                    loadingText.style.display = 'none';
+                    
+                    // Create the HTML for the results table
+                    let tableHTML = `
+                        <h2>Total Dana: ${data.total_fund}</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sektor</th>
+                                    <th>Persentase</th>
+                                    <th>Alokasi Dana</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    data.recommendations.forEach(item => {
+                        tableHTML += `
+                            <tr>
+                                <td>${item.sector}</td>
+                                <td>${item.percentage}</td>
+                                <td>${item.amount}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += `</tbody></table>`;
+                    
+                    // Insert the new HTML into our container
+                    resultsContainer.innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    console.error('Error fetching recommendations:', error);
+                    resultsContainer.innerHTML = '<p>Sorry, an error occurred while fetching the data.</p>';
+                    loader.style.display = 'none';
+                    loadingText.style.display = 'none';
+                });
+        });
+    </script>
+</body>
+</html>
