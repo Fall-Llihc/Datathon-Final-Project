@@ -22,7 +22,7 @@ def index():
 def get_recommendations():
     # Simulate the model taking time to run
     print("Model is running...")
-    time.sleep(3) # Pauses for 3 seconds to simulate a long calculation
+    time.sleep(1) # Pauses for 3 seconds to simulate a long calculation
     print("Model finished.")
 
     # Your DRL model logic
